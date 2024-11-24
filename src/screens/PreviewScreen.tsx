@@ -1,7 +1,10 @@
-import {Button, Image, Pressable, Text, View} from 'react-native';
+import {Image, Pressable, Text, View} from 'react-native';
+import {useWallpaper} from '../context/WallpaperContext';
 
 const PreviewScreen = () => {
-  return (
+  const {selectedPreviewWallpaper} = useWallpaper();
+
+  return selectedPreviewWallpaper ? (
     <View
       style={{
         paddingVertical: 10,
@@ -13,17 +16,19 @@ const PreviewScreen = () => {
       }}>
       <View style={{flexDirection: 'row', backgroundColor: 'transparent'}}>
         <View style={{flex: 1}}>
-          <Text>Title</Text>
-          <Text>ViewCounts</Text>
+          <Text>{selectedPreviewWallpaper.title}</Text>
+          <Text>Views : {selectedPreviewWallpaper.viewsCount}</Text>
         </View>
         <Pressable style={{flex: 0, alignSelf: 'center'}}>
-          <Text style={{fontSize: 25}}>Like</Text>
+          <Text style={{fontSize: 25}}>
+            {selectedPreviewWallpaper.isLiked ? 'Liked' : 'Like'}
+          </Text>
         </Pressable>
       </View>
       <View style={{flex: 1}}>
         <Image
           source={{
-            uri: 'https://api.slingacademy.com/public/sample-photos/1.jpeg',
+            uri: selectedPreviewWallpaper.uri,
           }}
           alt="image"
           resizeMode="cover"
@@ -36,7 +41,7 @@ const PreviewScreen = () => {
         <WallpaperPreviewOption />
       </View>
     </View>
-  );
+  ) : null;
 };
 
 export default PreviewScreen;
