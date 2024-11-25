@@ -5,6 +5,8 @@ import HomeScreen from './src/screens/HomeScreen';
 import PreviewScreen from './src/screens/PreviewScreen';
 import WallpaperProvider from './src/context/WallpaperContext';
 
+import RenderBottomSheet from './src/components/RenderBottomSheet';
+
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
@@ -21,6 +23,8 @@ function App(): React.JSX.Element {
           </Stack.Navigator>
         </NavigationContainer>
       </WallpaperProvider>
+
+      {/* <RenderBottomSheet /> */}
     </SafeAreaView>
   );
 }

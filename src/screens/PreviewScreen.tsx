@@ -1,7 +1,7 @@
-import {Image, Pressable, Text, View} from 'react-native';
+import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useWallpaper} from '../context/WallpaperContext';
 import PagerView from 'react-native-pager-view';
-import {useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {TWallpaper} from '../types/wallpaper';
 
 const PreviewScreen = () => {
@@ -49,7 +49,7 @@ const PreviewScreen = () => {
       </View>
 
       <PagerView
-        style={{flex: 1}}
+        style={{flex: 1, display: 'none'}}
         initialPage={selectedPage}
         onPageSelected={e => {
           setSelectedPage(e.nativeEvent.position);
@@ -64,6 +64,7 @@ const PreviewScreen = () => {
           flexDirection: 'row',
           justifyContent: 'space-evenly',
           paddingHorizontal: 20,
+          display: 'flex',
         }}>
         <WallpaperPreviewOption />
         <WallpaperPreviewOption />
@@ -91,13 +92,18 @@ const WallpaperPreviewBox = ({uri}: {uri: string}) => {
 };
 
 const WallpaperPreviewOption = () => {
+  const {setSelectedBottomSheet,selectedBottomSheet} = useWallpaper();
   return (
-    <View
+    <Pressable
+      onPress={() => {
+        setSelectedBottomSheet('set-wallpaper');
+        console.log('clicked',selectedBottomSheet);
+      }}
       style={{
         width: '15%',
         aspectRatio: 1 / 1,
         backgroundColor: '#001394',
         borderRadius: '50%',
-      }}></View>
+      }}></Pressable>
   );
 };
