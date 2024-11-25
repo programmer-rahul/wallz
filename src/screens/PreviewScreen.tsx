@@ -1,13 +1,20 @@
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {Image, Pressable, Text, View} from 'react-native';
 import {useWallpaper} from '../context/WallpaperContext';
 import PagerView from 'react-native-pager-view';
-import {useCallback, useRef, useState} from 'react';
+import {useState} from 'react';
 import {TWallpaper} from '../types/wallpaper';
+import {TRootStackParamList} from '../types/navigation';
+import {RouteProp} from '@react-navigation/native';
 
-const PreviewScreen = () => {
+type TPreviewScreenRouteProp = RouteProp<TRootStackParamList, 'Preview'>;
+
+const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
   const {selectedPreviewWallpaper, wallpapersList} = useWallpaper();
 
-  const [selectedPage, setSelectedPage] = useState(0);
+  const {index} = route.params;
+  console.log('route :- ', index);
+
+  const [selectedPage, setSelectedPage] = useState(index || 0);
   const [wallpapersListing, setWallpapersListing] =
     useState<TWallpaper[]>(wallpapersList);
 
@@ -49,7 +56,7 @@ const PreviewScreen = () => {
       </View>
 
       <PagerView
-        style={{flex: 1, display: 'none'}}
+        style={{flex: 1, display: 'flex'}}
         initialPage={selectedPage}
         onPageSelected={e => {
           setSelectedPage(e.nativeEvent.position);
@@ -92,12 +99,12 @@ const WallpaperPreviewBox = ({uri}: {uri: string}) => {
 };
 
 const WallpaperPreviewOption = () => {
-  const {setSelectedBottomSheet,selectedBottomSheet} = useWallpaper();
+  const {setSelectedBottomSheet, selectedBottomSheet} = useWallpaper();
   return (
     <Pressable
       onPress={() => {
         setSelectedBottomSheet('set-wallpaper');
-        console.log('clicked',selectedBottomSheet);
+        console.log('clicked', selectedBottomSheet);
       }}
       style={{
         width: '15%',

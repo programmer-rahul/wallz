@@ -6,8 +6,9 @@ import PreviewScreen from './src/screens/PreviewScreen';
 import WallpaperProvider from './src/context/WallpaperContext';
 
 import RenderBottomSheet from './src/components/RenderBottomSheet';
+import { TRootStackParamList } from './src/types/navigation';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<TRootStackParamList>();
 
 function App(): React.JSX.Element {
   return (
