@@ -7,7 +7,7 @@ const WallpaperLikeBtn = ({
   hideOnUnlike = false,
 }: {
   wallpaperId: string;
-  hideOnUnlike: boolean;
+  hideOnUnlike?: boolean;
 }) => {
   const {likedWallpapers, setLikedWallpapers} = useWallpaper();
 

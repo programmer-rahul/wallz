@@ -1,8 +1,10 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   createContext,
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from 'react';
 
@@ -27,6 +29,38 @@ const WallpaperProvider = ({children}: {children: React.ReactNode}) => {
   const [likedWallpapers, setLikedWallpapers] = useState<string[]>([]);
   const [selectedBottomSheet, setSelectedBottomSheet] =
     useState<TSelectedBottomSheet>(null);
+
+  const saveLikedWallpapersInLocal = async () => {
+    try {
+      const jsonValues = JSON.stringify(likedWallpapers);
+      await AsyncStorage.setItem('@likedWallpapers', jsonValues);
+    } catch (err) {
+      console.log('error while saving in localstorage');
+    }
+  };
+
+  const fetchLikedWallpapersFromLocal = async () => {
+    try {
+      const jsonValues = await AsyncStorage.getItem('@likedWallpapers');
+      const fetchedWallpapers =
+        jsonValues !== null ? JSON.parse(jsonValues) : [];
+      setLikedWallpapers(fetchedWallpapers);
+    } catch (err) {
+      console.log('error while fetching likedWallpaers from localstorage');
+    }
+  };
+
+  useEffect(() => {
+    console.log('rendered context');
+    fetchLikedWallpapersFromLocal();
+  }, []);
+
+  useEffect(() => {
+    console.log('liked wallpaper changed',likedWallpapers);
+    if (likedWallpapers.length) {
+      saveLikedWallpapersInLocal();
+    }
+  }, [likedWallpapers]);
 
   return (
     <WallpaperContext.Provider
