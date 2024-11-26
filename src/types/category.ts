@@ -1,12 +1,3 @@
-type TCategoryNames =
-  | 'all-wallpapers'
-  | 'favourite'
-  | 'Nature'
-  | 'Architecture'
-  | 'Animals'
-  | 'Abstract'
-  | 'Space'
-  | 'Technology'
-  | 'Art';
+type TCategoryNames = 'all-wallpapers' | 'favourite' | string;
 
 export type {TCategoryNames};

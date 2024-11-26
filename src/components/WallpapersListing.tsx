@@ -26,8 +26,6 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  console.log('JSON.stringify', JSON.stringify(likedWallpapers));
-
   const fetchWallpapers = async ({
     limit,
     page,
@@ -60,7 +58,7 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
   }, []);
 
   return isLoading && !wallpaperListing.length ? (
-    <View style={{marginTop: 100}}>
+    <View style={{flex: 1, justifyContent: 'center'}}>
       <ActivityIndicator size={'large'} />
     </View>
   ) : (
@@ -119,6 +117,7 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
             )
           );
         }}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );

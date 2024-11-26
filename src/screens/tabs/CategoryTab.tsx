@@ -37,7 +37,7 @@ const CategoryTab = () => {
   }, []);
 
   return isLoading ? (
-    <View style={{marginTop: 100}}>
+    <View style={{flex: 1, justifyContent: 'center'}}>
       <ActivityIndicator size={'large'} />
     </View>
   ) : (
@@ -61,7 +61,7 @@ const CategoryTab = () => {
         }}
         ListHeaderComponent={() => {
           return (
-            <View style={{marginBottom : 10}}>
+            <View style={{marginBottom: 10}}>
               <Text style={{fontSize: 30}}>Categories</Text>
             </View>
           );

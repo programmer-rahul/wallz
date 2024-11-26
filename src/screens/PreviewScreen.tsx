@@ -1,4 +1,4 @@
-import {Image, Pressable, Text, View} from 'react-native';
+import {Alert, Image, Pressable, Text, View} from 'react-native';
 import PagerView from 'react-native-pager-view';
 import {useEffect, useState} from 'react';
 import {TWallpaper} from '../types/wallpaper';
@@ -7,6 +7,8 @@ import {RouteProp} from '@react-navigation/native';
 import RTNDeviceWallpaper from 'react-native-device-wallpaper-manager/js/NativeDeviceWallpaper';
 import useAxios from '../hooks/useAxios';
 import WallpaperLikeBtn from '../components/WallpaperLikeBtn';
+import {ArrowDownToLine, Stamp} from 'lucide-react-native';
+import RNFS from 'react-native-fs';
 
 type TPreviewScreenRouteProp = RouteProp<TRootStackParamList, 'Preview'>;
 
@@ -63,10 +65,10 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
       <View
         style={{
           paddingVertical: 10,
-          backgroundColor: '#999999',
-          flex: 1,
+          backgroundColor: '#cccddd',
           flexDirection: 'column',
           rowGap: 20,
+          flex: 1,
         }}>
         <View
           style={{
@@ -111,10 +113,6 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
             type="set-wallpaper"
             url={wallpaperListing[selectedPage].url}
           />
-          <WallpaperPreviewOption
-            type="set-wallpaper"
-            url={wallpaperListing[selectedPage].url}
-          />
         </View>
       </View>
     )
@@ -132,7 +130,7 @@ const WallpaperPreviewBox = ({url}: {url: string}) => {
         }}
         alt="image"
         resizeMode="cover"
-        style={{width: '100%', height: '100%', borderRadius: 10}}
+        style={{width: '100%', flex: 1, borderRadius: 10}}
       />
     </View>
   );
@@ -148,23 +146,57 @@ const WallpaperPreviewOption = ({
   const setWallpaper = async () => {
     console.log('url', url);
     const status = await RTNDeviceWallpaper?.setWallpaper(url, 'both');
+    console.log('status', status);
   };
 
-  const downloadWallpaper = () => {};
+  const downloadWallpaper = async (imageUrl: string) => {
+    // Extract file name from the URL
+    const fileName = imageUrl.split('/').pop();
+    const directoryPath = `${RNFS.DownloadDirectoryPath}/wallpaper-app`;
+    const downloadPath = `${directoryPath}/${fileName}`;
+
+    try {
+      // Check if the directory exists; if not, create it
+      const directoryExists = await RNFS.exists(directoryPath);
+      if (!directoryExists) {
+        await RNFS.mkdir(directoryPath);
+      }
+
+      // Download the file to the specified directory
+      const result = await RNFS.downloadFile({
+        fromUrl: imageUrl,
+        toFile: downloadPath,
+      }).promise;
+
+      if (result.statusCode === 200) {
+        Alert.alert('Success', 'Wallpaper saved successfully');
+      } else {
+        Alert.alert('Error', 'Failed to save the wallpaper.');
+      }
+    } catch (error) {
+      console.error('Error saving wallpaper:', error);
+      Alert.alert('Error', 'An error occurred while saving the wallpaper.');
+    }
+  };
 
   return (
     <Pressable
       onPress={() => {
-        // setSelectedBottomSheet('set-wallpaper');
-
         type === 'set-wallpaper' && setWallpaper();
-        type === 'download-wallpaper' && downloadWallpaper();
+        type === 'download-wallpaper' && downloadWallpaper(url);
       }}
       style={{
         width: '15%',
         aspectRatio: 1 / 1,
         backgroundColor: '#00199a',
         borderRadius: '50%',
-      }}></Pressable>
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      {type === 'download-wallpaper' && (
+        <ArrowDownToLine size={25} color={'#fff333'} />
+      )}
+      {type === 'set-wallpaper' && <Stamp size={25} color={'#fff333'} />}
+    </Pressable>
   );
 };
