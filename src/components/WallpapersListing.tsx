@@ -11,34 +11,46 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {TRootStackParamList} from '../types/navigation';
-import {useWallpaper} from '../context/WallpaperContext';
-import {DefaultWallpapers} from '../libs/data';
 import {TCategoryNames} from '../types/category';
 
 const WallpapersListing = ({category}: {category: TCategoryNames}) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<TRootStackParamList>>();
   const {isLoading, apiCall} = useAxios();
+
   const [wallpaperListing, setWallpaperListing] = useState<TWallpaper[]>([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const fetchWallpapers = async ({
+    limit,
+    page,
+  }: {
+    limit: number;
+    page: number;
+  }) => {
+    const response = await apiCall({
+      method: 'get',
+      url: '/wallpaper/get-wallpaper/' + category,
+      params: {
+        limit: limit,
+        page: page,
+      },
+    });
+    // console.log('response', response.wallpapers);
+    if (response) {
+      if (response.wallpapers.length === 0) {
+        return setHasMore(false);
+      }
+      setWallpaperListing(prev => [...prev, ...response.wallpapers]);
+    }
+  };
 
   useEffect(() => {
-    console.log('rendered');
-
-    (async () => {
-      const response = await apiCall({
-        method: 'get',
-        url: '/wallpaper/get-wallpaper/' + category,
-        params: {
-          limit: 10,
-          page: 1,
-        },
-      });
-      console.log('response', response.wallpapers);
-      if (response) {
-        setWallpaperListing(response.wallpapers);
-      }
-    })();
+    fetchWallpapers({limit: 8, page: pageNumber});
   }, []);
 
-  return isLoading ? (
+  return isLoading && !wallpaperListing.length ? (
     <View style={{marginTop: 100}}>
       <ActivityIndicator size={'large'} />
     </View>
@@ -50,13 +62,33 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
         return (
           <WallpaperListItem
             url={item.url}
-            key={item.id}
-            id={item.id}
-            index={index}
+            key={index}
+            onPress={() => {
+              navigation.navigate('Preview', {
+                defaultWallpapers: wallpaperListing,
+                index,
+                category,
+                hasMore,
+                pageNumber,
+              });
+            }}
           />
         );
       }}
       numColumns={2}
+      onEndReached={e => {
+        if (!hasMore) return;
+        console.log('end reached', e.distanceFromEnd);
+        setPageNumber(prev => prev + 1);
+        fetchWallpapers({limit: 8, page: pageNumber + 1});
+      }}
+      ListFooterComponent={() => {
+        return (
+          isLoading && (
+            <ActivityIndicator style={{paddingBottom: 20}} size={'large'} />
+          )
+        );
+      }}
     />
   );
 };
@@ -65,17 +97,13 @@ export default WallpapersListing;
 
 const WallpaperListItem = ({
   url,
-  id,
-  index,
+
+  onPress,
 }: {
   url: string;
-  id: number;
-  index: number;
-}) => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<TRootStackParamList>>();
-  const {setSelectedPreviewWallpaper} = useWallpaper();
 
+  onPress: () => void;
+}) => {
   return (
     <Pressable
       style={{
@@ -83,13 +111,7 @@ const WallpaperListItem = ({
         height: 200,
       }}
       onPress={() => {
-        setSelectedPreviewWallpaper(
-          DefaultWallpapers.find(wallpaper => wallpaper.id === id) || null,
-        );
-        navigation.navigate('Preview', {
-          index: index,
-          category: 'all-wallpapers',
-        });
+        onPress();
       }}>
       <Image
         source={{uri: url}}

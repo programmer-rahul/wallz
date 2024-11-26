@@ -1,5 +1,4 @@
 import {Image, Pressable, Text, View} from 'react-native';
-import {useWallpaper} from '../context/WallpaperContext';
 import PagerView from 'react-native-pager-view';
 import {useEffect, useState} from 'react';
 import {TWallpaper} from '../types/wallpaper';
@@ -11,30 +10,52 @@ import useAxios from '../hooks/useAxios';
 type TPreviewScreenRouteProp = RouteProp<TRootStackParamList, 'Preview'>;
 
 const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
-  const {index, category} = route.params;
+  const {
+    index,
+    category,
+    defaultWallpapers,
+    hasMore: defaultHasMore,
+    pageNumber: defaultPageNumber,
+  } = route.params;
   const {isLoading, apiCall} = useAxios();
 
   const [selectedPage, setSelectedPage] = useState(index || 0);
-  const [wallpaperListing, setWallpaperListing] = useState<TWallpaper[]>([]);
+  const [wallpaperListing, setWallpaperListing] = useState<TWallpaper[]>(
+    defaultWallpapers || [],
+  );
+  const [pageNumber, setPageNumber] = useState(defaultPageNumber);
+  const [hasMore, setHasMore] = useState(defaultHasMore);
+
+  const fetchWallpapers = async ({
+    limit,
+    page,
+  }: {
+    limit: number;
+    page: number;
+  }) => {
+    const response = await apiCall({
+      method: 'get',
+      url: '/wallpaper/get-wallpaper/' + category,
+      params: {
+        limit: limit,
+        page: page,
+      },
+    });
+    if (response) {
+      if (response.wallpapers.length === 0) {
+        return setHasMore(false);
+      }
+      setWallpaperListing(prev => [...prev, ...response.wallpapers]);
+    }
+  };
 
   useEffect(() => {
-    console.log('rendered');
-
-    (async () => {
-      const response = await apiCall({
-        method: 'get',
-        url: '/wallpaper/get-wallpaper/Architecture',
-        params: {
-          limit: 10,
-          page: 1,
-        },
-      });
-      console.log('response', response.wallpapers[selectedPage]);
-      if (response) {
-        setWallpaperListing(response.wallpapers);
-      }
-    })();
-  }, []);
+    if (wallpaperListing.length === 0 || !hasMore) return;
+    if (selectedPage + 1 >= wallpaperListing.length - 1 && !isLoading) {
+      setPageNumber(prev => prev + 1);
+      fetchWallpapers({limit: 8, page: pageNumber + 1});
+    }
+  }, [selectedPage]);
 
   return (
     String(wallpaperListing.length) && (
