@@ -6,6 +6,7 @@ import {TRootStackParamList} from '../types/navigation';
 import {RouteProp} from '@react-navigation/native';
 import RTNDeviceWallpaper from 'react-native-device-wallpaper-manager/js/NativeDeviceWallpaper';
 import useAxios from '../hooks/useAxios';
+import WallpaperLikeBtn from '../components/WallpaperLikeBtn';
 
 type TPreviewScreenRouteProp = RouteProp<TRootStackParamList, 'Preview'>;
 
@@ -79,24 +80,7 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
               Views : {wallpaperListing[selectedPage]?.viewsCount || 0}
             </Text>
           </View>
-          <Pressable
-            style={{flex: 0, alignSelf: 'center'}}
-            onPress={() => {
-              setWallpaperListing(prev =>
-                prev.map((wallpaper, index) => {
-                  if (index === selectedPage) {
-                    wallpaper.isLiked = !wallpaperListing[selectedPage].isLiked;
-                  }
-                  return wallpaper;
-                }),
-              );
-            }}>
-            <Text style={{fontSize: 25}}>
-              {wallpaperListing[selectedPage]?.isLiked || false
-                ? 'Liked'
-                : 'Like'}
-            </Text>
-          </Pressable>
+          <WallpaperLikeBtn wallpaperId={wallpaperListing[selectedPage].id} />
         </View>
 
         <PagerView

@@ -1,6 +1,13 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {FlatList, Image, Pressable, Text, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
 import {TRootStackParamList} from '../../types/navigation';
 import {useEffect, useState} from 'react';
 import useAxios from '../../hooks/useAxios';
@@ -23,14 +30,17 @@ const CategoryTab = () => {
         method: 'get',
         url: '/category/get-categories/',
       });
-      console.log('response', response);
       if (response) {
         setAllCategories(response.allCategories);
       }
     })();
   }, []);
 
-  return (
+  return isLoading ? (
+    <View style={{marginTop: 100}}>
+      <ActivityIndicator size={'large'} />
+    </View>
+  ) : (
     <View style={{height: '100%'}}>
       <FlatList
         style={{
@@ -70,7 +80,8 @@ const CategoryListItem = ({
     <Pressable
       style={{
         width: '100%',
-        height: 130,
+        aspectRatio: 2.8 / 1,
+        flex: 1,
         marginBottom: 10,
       }}
       onPress={() => {

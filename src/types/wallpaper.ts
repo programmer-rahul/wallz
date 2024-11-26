@@ -1,9 +1,8 @@
 interface TWallpaper {
-  id: number;
+  id: string;
   url: string;
   name: string;
   viewsCount: number;
-  isLiked: boolean;
 }
 
 export type {TWallpaper};
