@@ -1,94 +1,129 @@
 import {Image, Pressable, Text, View} from 'react-native';
 import {useWallpaper} from '../context/WallpaperContext';
 import PagerView from 'react-native-pager-view';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {TWallpaper} from '../types/wallpaper';
 import {TRootStackParamList} from '../types/navigation';
 import {RouteProp} from '@react-navigation/native';
+import RTNDeviceWallpaper from 'react-native-device-wallpaper-manager/js/NativeDeviceWallpaper';
+import useAxios from '../hooks/useAxios';
 
 type TPreviewScreenRouteProp = RouteProp<TRootStackParamList, 'Preview'>;
 
 const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
-  const {selectedPreviewWallpaper, wallpapersList} = useWallpaper();
-
-  const {index} = route.params;
-  console.log('route :- ', index);
+  const {index, category} = route.params;
+  const {isLoading, apiCall} = useAxios();
 
   const [selectedPage, setSelectedPage] = useState(index || 0);
-  const [wallpapersListing, setWallpapersListing] =
-    useState<TWallpaper[]>(wallpapersList);
+  const [wallpaperListing, setWallpaperListing] = useState<TWallpaper[]>([]);
 
-  return selectedPreviewWallpaper ? (
-    <View
-      style={{
-        paddingVertical: 10,
-        backgroundColor: '#999999',
-        flex: 1,
-        flexDirection: 'column',
-        rowGap: 20,
-      }}>
+  useEffect(() => {
+    console.log('rendered');
+
+    (async () => {
+      const response = await apiCall({
+        method: 'get',
+        url: '/wallpaper/get-wallpaper/Architecture',
+        params: {
+          limit: 10,
+          page: 1,
+        },
+      });
+      console.log('response', response.wallpapers[selectedPage]);
+      if (response) {
+        setWallpaperListing(response.wallpapers);
+      }
+    })();
+  }, []);
+
+  return (
+    String(wallpaperListing.length) && (
       <View
         style={{
-          flexDirection: 'row',
-          backgroundColor: 'transparent',
-          paddingHorizontal: 20,
+          paddingVertical: 10,
+          backgroundColor: '#999999',
+          flex: 1,
+          flexDirection: 'column',
+          rowGap: 20,
         }}>
-        <View style={{flex: 1}}>
-          <Text>{wallpapersListing[selectedPage].title}</Text>
-          <Text>Views : {wallpapersListing[selectedPage].viewsCount}</Text>
-        </View>
-        <Pressable
-          style={{flex: 0, alignSelf: 'center'}}
-          onPress={() => {
-            setWallpapersListing(prev =>
-              prev.map((wallpaper, index) => {
-                if (index === selectedPage) {
-                  wallpaper.isLiked = !wallpapersListing[selectedPage].isLiked;
-                }
-                return wallpaper;
-              }),
-            );
+        <View
+          style={{
+            flexDirection: 'row',
+            backgroundColor: 'transparent',
+            paddingHorizontal: 20,
           }}>
-          <Text style={{fontSize: 25}}>
-            {wallpapersListing[selectedPage].isLiked ? 'Liked' : 'Like'}
-          </Text>
-        </Pressable>
-      </View>
+          <View style={{flex: 1}}>
+            <Text>{wallpaperListing[selectedPage]?.name}</Text>
+            <Text>
+              Views : {wallpaperListing[selectedPage]?.viewsCount || 0}
+            </Text>
+          </View>
+          <Pressable
+            style={{flex: 0, alignSelf: 'center'}}
+            onPress={() => {
+              setWallpaperListing(prev =>
+                prev.map((wallpaper, index) => {
+                  if (index === selectedPage) {
+                    wallpaper.isLiked = !wallpaperListing[selectedPage].isLiked;
+                  }
+                  return wallpaper;
+                }),
+              );
+            }}>
+            <Text style={{fontSize: 25}}>
+              {wallpaperListing[selectedPage]?.isLiked || false
+                ? 'Liked'
+                : 'Like'}
+            </Text>
+          </Pressable>
+        </View>
 
-      <PagerView
-        style={{flex: 1, display: 'flex'}}
-        initialPage={selectedPage}
-        onPageSelected={e => {
-          setSelectedPage(e.nativeEvent.position);
-        }}>
-        {wallpapersListing.map(wallpaper => {
-          return <WallpaperPreviewBox uri={wallpaper.uri} key={wallpaper.id} />;
-        })}
-      </PagerView>
+        <PagerView
+          style={{flex: 1, display: 'flex'}}
+          initialPage={selectedPage}
+          onPageSelected={e => {
+            setSelectedPage(e.nativeEvent.position);
+          }}>
+          {wallpaperListing.map(wallpaper => {
+            return (
+              <WallpaperPreviewBox url={wallpaper.url} key={wallpaper.id} />
+            );
+          })}
+        </PagerView>
 
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-evenly',
-          paddingHorizontal: 20,
-          display: 'flex',
-        }}>
-        <WallpaperPreviewOption />
-        <WallpaperPreviewOption />
-        <WallpaperPreviewOption />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            paddingHorizontal: 20,
+            display: 'flex',
+          }}>
+          <WallpaperPreviewOption
+            type="download-wallpaper"
+            url={wallpaperListing[selectedPage].url}
+          />
+          <WallpaperPreviewOption
+            type="set-wallpaper"
+            url={wallpaperListing[selectedPage].url}
+          />
+          <WallpaperPreviewOption
+            type="set-wallpaper"
+            url={wallpaperListing[selectedPage].url}
+          />
+        </View>
       </View>
-    </View>
-  ) : null;
+    )
+  );
 };
 
 export default PreviewScreen;
 
-const WallpaperPreviewBox = ({uri}: {uri: string}) => {
+const WallpaperPreviewBox = ({url}: {url: string}) => {
   return (
     <View style={{flex: 1, paddingHorizontal: 20}}>
       <Image
         source={{
-          uri: uri,
+          uri: url,
         }}
         alt="image"
         resizeMode="cover"
@@ -98,18 +133,35 @@ const WallpaperPreviewBox = ({uri}: {uri: string}) => {
   );
 };
 
-const WallpaperPreviewOption = () => {
-  const {setSelectedBottomSheet, selectedBottomSheet} = useWallpaper();
+const WallpaperPreviewOption = ({
+  type,
+  url,
+}: {
+  type: 'set-wallpaper' | 'download-wallpaper';
+  url: string;
+}) => {
+  const setWallpaper = async () => {
+    console.log('url', url);
+    await RTNDeviceWallpaper?.setWallpaper(
+      'https://images.unsplash.com/photo-1591154669695-5f2a8d20c089?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'both',
+    );
+  };
+
+  const downloadWallpaper = () => {};
+
   return (
     <Pressable
       onPress={() => {
-        setSelectedBottomSheet('set-wallpaper');
-        console.log('clicked', selectedBottomSheet);
+        // setSelectedBottomSheet('set-wallpaper');
+
+        type === 'set-wallpaper' && setWallpaper();
+        type === 'download-wallpaper' && downloadWallpaper();
       }}
       style={{
         width: '15%',
         aspectRatio: 1 / 1,
-        backgroundColor: '#001394',
+        backgroundColor: '#00199a',
         borderRadius: '50%',
       }}></Pressable>
   );

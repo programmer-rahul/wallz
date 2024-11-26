@@ -1,7 +1,7 @@
 interface TWallpaper {
   id: number;
-  uri: string;
-  title: string;
+  url: string;
+  name: string;
   viewsCount: number;
   isLiked: boolean;
 }
