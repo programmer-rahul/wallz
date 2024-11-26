@@ -59,6 +59,13 @@ const CategoryTab = () => {
             />
           );
         }}
+        ListHeaderComponent={() => {
+          return (
+            <View style={{marginBottom : 10}}>
+              <Text style={{fontSize: 30}}>Categories</Text>
+            </View>
+          );
+        }}
       />
     </View>
   );
@@ -80,7 +87,7 @@ const CategoryListItem = ({
     <Pressable
       style={{
         width: '100%',
-        aspectRatio: 2.8 / 1,
+        aspectRatio: 3 / 1,
         flex: 1,
         marginBottom: 10,
       }}

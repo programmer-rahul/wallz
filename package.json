@@ -24,7 +24,8 @@
     "react-native-pager-view": "^6.5.1",
     "react-native-reanimated": "^3.16.2",
     "react-native-safe-area-context": "^4.14.0",
-    "react-native-screens": "^4.3.0"
+    "react-native-screens": "^4.3.0",
+    "react-native-svg": "^15.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -6,6 +6,7 @@ import {
   FlatList,
   Image,
   Pressable,
+  Text,
   View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -13,15 +14,19 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {TRootStackParamList} from '../types/navigation';
 import {TCategoryNames} from '../types/category';
 import WallpaperLikeBtn from './WallpaperLikeBtn';
+import {useWallpaper} from '../context/WallpaperContext';
 
 const WallpapersListing = ({category}: {category: TCategoryNames}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<TRootStackParamList>>();
   const {isLoading, apiCall} = useAxios();
+  const {likedWallpapers} = useWallpaper();
 
   const [wallpaperListing, setWallpaperListing] = useState<TWallpaper[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+
+  console.log('JSON.stringify', JSON.stringify(likedWallpapers));
 
   const fetchWallpapers = async ({
     limit,
@@ -36,6 +41,9 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
       params: {
         limit: limit,
         page: page,
+        ...(category === 'favourite' && {
+          favouriteIds: JSON.stringify(likedWallpapers),
+        }),
       },
     });
     // console.log('response', response.wallpapers);
@@ -95,6 +103,15 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
           setPageNumber(prev => prev + 1);
           fetchWallpapers({limit: 8, page: pageNumber + 1});
         }}
+        ListHeaderComponent={() => {
+          return (
+            <View>
+              <Text style={{fontSize: 30, textTransform: 'capitalize'}}>
+                {category}
+              </Text>
+            </View>
+          );
+        }}
         ListFooterComponent={() => {
           return (
             isLoading && (
@@ -121,7 +138,7 @@ const WallpaperListItem = ({
   return (
     <Pressable
       style={{
-        aspectRatio: 1.3 / 2,
+        aspectRatio: 9 / 16,
         flex: 1,
       }}
       onPress={() => {

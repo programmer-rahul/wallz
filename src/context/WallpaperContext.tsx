@@ -51,12 +51,10 @@ const WallpaperProvider = ({children}: {children: React.ReactNode}) => {
   };
 
   useEffect(() => {
-    console.log('rendered context');
     fetchLikedWallpapersFromLocal();
   }, []);
 
   useEffect(() => {
-    console.log('liked wallpaper changed',likedWallpapers);
     if (likedWallpapers.length) {
       saveLikedWallpapersInLocal();
     }
