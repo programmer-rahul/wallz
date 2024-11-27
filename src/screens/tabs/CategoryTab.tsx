@@ -36,37 +36,34 @@ const CategoryTab = () => {
     })();
   }, []);
 
-  return isLoading ? (
-    <View style={{flex: 1, justifyContent: 'center'}}>
-      <ActivityIndicator size={'large'} />
-    </View>
-  ) : (
-    <View style={{height: '100%'}}>
-      <FlatList
-        style={{
-          width: '100%',
-          backgroundColor: 'transparent',
-          padding: 10,
-          display: 'flex',
-        }}
-        data={allCategories}
-        renderItem={({item, index}) => {
-          return (
-            <CategoryListItem
-              key={index}
-              categoryName={item.name}
-              previewUrl={item.previewUrl}
-            />
-          );
-        }}
-        ListHeaderComponent={() => {
-          return (
-            <View style={{marginBottom: 10}}>
-              <Text style={{fontSize: 30}}>Categories</Text>
-            </View>
-          );
-        }}
-      />
+  return (
+    <View style={{flexDirection: 'column', flex: 1, padding: 10, gap: 10}}>
+      <Text style={{fontSize: 30, textTransform: 'capitalize'}}>Category</Text>
+
+      {isLoading && !allCategories.length ? (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator size={'large'} />
+        </View>
+      ) : (
+        <FlatList
+          style={{
+            width: '100%',
+            backgroundColor: 'transparent',
+            display: 'flex',
+          }}
+          data={allCategories}
+          renderItem={({item, index}) => {
+            return (
+              <CategoryListItem
+                key={index}
+                categoryName={item.name}
+                previewUrl={item.previewUrl}
+              />
+            );
+          }}
+          ListFooterComponent={() => <View style={{paddingBottom: 10}} />}
+        />
+      )}
     </View>
   );
 };

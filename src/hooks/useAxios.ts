@@ -2,7 +2,7 @@ import axios from 'axios';
 import {useState} from 'react';
 import {TApiCall} from '../types/api';
 
-const baseUrl = 'https://txp3lwxb-4000.inc1.devtunnels.ms/' || '';
+const baseUrl = 'https://wallz-backend-build.onrender.com/' || '';
 
 const AxiosInstance = axios.create({
   baseURL: baseUrl,
