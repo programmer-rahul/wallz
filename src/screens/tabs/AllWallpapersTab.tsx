@@ -4,7 +4,7 @@ import WallpapersListing from '../../components/WallpapersListing';
 const AllWallpapersTab = () => {
   return (
     <View style={{height: '100%'}}>
-      <WallpapersListing category="Abstract" />
+      <WallpapersListing category="all-wallpapers" />
     </View>
   );
 };

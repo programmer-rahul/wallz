@@ -7,8 +7,10 @@ import {RouteProp} from '@react-navigation/native';
 import RTNDeviceWallpaper from 'react-native-device-wallpaper-manager/js/NativeDeviceWallpaper';
 import useAxios from '../hooks/useAxios';
 import WallpaperLikeBtn from '../components/WallpaperLikeBtn';
-import {ArrowDownToLine, Stamp} from 'lucide-react-native';
+import {ArrowDownToLine, Eye, Stamp} from 'lucide-react-native';
 import RNFS from 'react-native-fs';
+import {LIMIT} from '../constants/api';
+import RenderImage from '../components/RenderImage';
 
 type TPreviewScreenRouteProp = RouteProp<TRootStackParamList, 'Preview'>;
 
@@ -56,7 +58,7 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
     if (wallpaperListing.length === 0 || !hasMore) return;
     if (selectedPage + 1 >= wallpaperListing.length - 1 && !isLoading) {
       setPageNumber(prev => prev + 1);
-      fetchWallpapers({limit: 8, page: pageNumber + 1});
+      fetchWallpapers({limit: LIMIT, page: pageNumber + 1});
     }
   }, [selectedPage]);
 
@@ -77,10 +79,18 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
             paddingHorizontal: 20,
           }}>
           <View style={{flex: 1}}>
-            <Text>{wallpaperListing[selectedPage]?.name}</Text>
-            <Text>
-              Views : {wallpaperListing[selectedPage]?.viewsCount || 0}
-            </Text>
+            <View style={{flexDirection: 'row', gap: 3, alignItems: 'center'}}>
+              <Eye size={16} />
+              <Text>
+                Views : {wallpaperListing[selectedPage]?.viewsCount || 0}
+              </Text>
+            </View>
+            <View style={{flexDirection: 'row', gap: 3, alignItems: 'center'}}>
+              <ArrowDownToLine size={16} />
+              <Text>
+                Downloads : {wallpaperListing[selectedPage]?.downloadCount || 0}
+              </Text>
+            </View>
           </View>
           <WallpaperLikeBtn wallpaperId={wallpaperListing[selectedPage].id} />
         </View>
@@ -124,14 +134,7 @@ export default PreviewScreen;
 const WallpaperPreviewBox = ({url}: {url: string}) => {
   return (
     <View style={{flex: 1, paddingHorizontal: 20}}>
-      <Image
-        source={{
-          uri: url,
-        }}
-        alt="image"
-        resizeMode="cover"
-        style={{width: '100%', flex: 1, borderRadius: 10}}
-      />
+      <RenderImage url={url} />
     </View>
   );
 };
@@ -144,9 +147,14 @@ const WallpaperPreviewOption = ({
   url: string;
 }) => {
   const setWallpaper = async () => {
-    console.log('url', url);
-    const status = await RTNDeviceWallpaper?.setWallpaper(url, 'both');
-    console.log('status', status);
+    try {
+      console.log('url', url);
+      const status = await RTNDeviceWallpaper?.setWallpaper(url, 'both');
+      console.log('get', await RTNDeviceWallpaper?.getConstants);
+      console.log('status', status);
+    } catch (error) {
+      console.log('Error while setting wallpaper', error);
+    }
   };
 
   const downloadWallpaper = async (imageUrl: string) => {

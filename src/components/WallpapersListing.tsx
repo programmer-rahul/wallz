@@ -1,20 +1,15 @@
 import {useEffect, useState} from 'react';
 import useAxios from '../hooks/useAxios';
 import {TWallpaper} from '../types/wallpaper';
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
+import {ActivityIndicator, FlatList, Pressable, Text, View} from 'react-native';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {TRootStackParamList} from '../types/navigation';
 import {TCategoryNames} from '../types/category';
 import WallpaperLikeBtn from './WallpaperLikeBtn';
 import {useWallpaper} from '../context/WallpaperContext';
+import {LIMIT} from '../constants/api';
+import RenderImage from './RenderImage';
 
 const WallpapersListing = ({category}: {category: TCategoryNames}) => {
   const navigation =
@@ -58,14 +53,15 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
   };
 
   useEffect(() => {
-    category !== 'favourite' && fetchWallpapers({limit: 8, page: pageNumber});
+    category !== 'favourite' &&
+      fetchWallpapers({limit: LIMIT, page: pageNumber});
   }, []);
 
   const isFocused = useIsFocused();
   useEffect(() => {
     if (category === 'favourite' && isFocused && !isLoading) {
       setWallpaperListing([]);
-      fetchWallpapers({limit: 8, page: 1});
+      fetchWallpapers({limit: LIMIT, page: 1});
       setPageNumber(prev => prev + 1);
     }
   }, [isFocused]);
@@ -73,7 +69,7 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
   return (
     <View style={{padding: 10, flexDirection: 'column', gap: 10, flex: 1}}>
       <Text style={{fontSize: 30, textTransform: 'capitalize'}}>
-        {category}
+        {category === 'all-wallpapers' ? 'Wallpapers' : category}
       </Text>
 
       {isLoading && !wallpaperListing.length ? (
@@ -116,16 +112,20 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
           onEndReached={e => {
             if (!hasMore) return;
             console.log('end reached', e.distanceFromEnd);
-            fetchWallpapers({limit: 8, page: pageNumber + 1});
+            fetchWallpapers({limit: LIMIT, page: pageNumber + 1});
             setPageNumber(prev => prev + 1);
           }}
           ListFooterComponent={() => {
             return (
-              isLoading && (
-                <ActivityIndicator style={{paddingBottom: 20}} size={'large'} />
-              )
+              <View style={{paddingBottom: 20}}>
+                {isLoading && <ActivityIndicator size={'large'} />}
+              </View>
             );
           }}
+          keyExtractor={item => item.id}
+          // initialNumToRender={8}
+          // maxToRenderPerBatch={8}
+          // windowSize={10}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -153,15 +153,12 @@ const WallpaperListItem = ({
       onPress={() => {
         onPress();
       }}>
-      <Image
-        source={{uri: url}}
-        alt="image"
-        resizeMode="cover"
-        style={{width: '100%', height: '100%', borderRadius: 6}}
-      />
+      <RenderImage url={url} />
       <View style={{position: 'absolute', bottom: 4, right: 4}}>
         <WallpaperLikeBtn wallpaperId={id} hideOnUnlike />
       </View>
     </Pressable>
   );
 };
+
+
