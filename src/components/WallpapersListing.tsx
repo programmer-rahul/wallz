@@ -1,15 +1,14 @@
 import {useEffect, useState} from 'react';
 import useAxios from '../hooks/useAxios';
 import {TWallpaper} from '../types/wallpaper';
-import {ActivityIndicator, FlatList, Pressable, Text, View} from 'react-native';
+import {ActivityIndicator, FlatList, Text, View} from 'react-native';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {TRootStackParamList} from '../types/navigation';
 import {TCategoryNames} from '../types/category';
-import WallpaperLikeBtn from './WallpaperLikeBtn';
 import {useWallpaper} from '../context/WallpaperContext';
 import {LIMIT} from '../constants/api';
-import RenderImage from './RenderImage';
+import WallpaperListItem from './WallpaperListItem';
 
 const WallpapersListing = ({category}: {category: TCategoryNames}) => {
   const navigation =
@@ -28,7 +27,7 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
     limit: number;
     page: number;
   }) => {
-    const response = await apiCall({
+    const {data} = await apiCall({
       method: 'get',
       url: '/wallpaper/get-wallpaper/' + category,
       params: {
@@ -39,14 +38,14 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
         }),
       },
     });
-    console.log('response', response.wallpapers.length);
-    if (response) {
-      if (response.wallpapers.length === 0) {
+    console.log('data', data.wallpapers.length);
+    if (data) {
+      if (data.wallpapers.length === 0) {
         return setHasMore(false);
       }
-      setWallpaperListing(prev => [...prev, ...response.wallpapers]);
+      setWallpaperListing(prev => [...prev, ...data.wallpapers]);
 
-      if (response.totalCount <= wallpaperListing.length + limit) {
+      if (data.totalCount <= wallpaperListing.length + limit) {
         return setHasMore(false);
       }
     }
@@ -56,6 +55,11 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
     category !== 'favourite' &&
       fetchWallpapers({limit: LIMIT, page: pageNumber});
   }, []);
+
+  const {viewedWallpapers} = useWallpaper();
+  useEffect(() => {
+    console.log('changed', viewedWallpapers);
+  }, [viewedWallpapers]);
 
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -110,7 +114,7 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
             gap: 10,
           }}
           onEndReached={e => {
-            if (!hasMore) return;
+            if (!hasMore || isLoading) return;
             console.log('end reached', e.distanceFromEnd);
             fetchWallpapers({limit: LIMIT, page: pageNumber + 1});
             setPageNumber(prev => prev + 1);
@@ -134,31 +138,3 @@ const WallpapersListing = ({category}: {category: TCategoryNames}) => {
 };
 
 export default WallpapersListing;
-
-const WallpaperListItem = ({
-  url,
-  onPress,
-  id,
-}: {
-  url: string;
-  onPress: () => void;
-  id: string;
-}) => {
-  return (
-    <Pressable
-      style={{
-        aspectRatio: 9 / 16,
-        flex: 1,
-      }}
-      onPress={() => {
-        onPress();
-      }}>
-      <RenderImage url={url} />
-      <View style={{position: 'absolute', bottom: 4, right: 4}}>
-        <WallpaperLikeBtn wallpaperId={id} hideOnUnlike />
-      </View>
-    </Pressable>
-  );
-};
-
-

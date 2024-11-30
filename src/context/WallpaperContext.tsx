@@ -7,15 +7,20 @@ import {
   useEffect,
   useState,
 } from 'react';
+import useAxios from '../hooks/useAxios';
+import {downloadFile} from 'react-native-fs';
 
 type TSelectedBottomSheet = 'set-wallpaper' | null;
 
 interface TWallpaperContext {
   likedWallpapers: string[];
   setLikedWallpapers: Dispatch<SetStateAction<string[]>>;
+  viewedWallpapers: string[];
+  increaseWallpaperCount: (id: string, type: 'view' | 'download') => void;
 
   selectedBottomSheet: TSelectedBottomSheet;
   setSelectedBottomSheet: Dispatch<SetStateAction<TSelectedBottomSheet>>;
+  setViewedWallpapers: Dispatch<SetStateAction<string[]>>;
 }
 
 const WallpaperContext = createContext<TWallpaperContext>({
@@ -23,12 +28,17 @@ const WallpaperContext = createContext<TWallpaperContext>({
   setLikedWallpapers: () => {},
   selectedBottomSheet: null,
   setSelectedBottomSheet: () => {},
+  viewedWallpapers: [],
+  setViewedWallpapers: () => {},
+
+  increaseWallpaperCount: () => {},
 });
 
 const WallpaperProvider = ({children}: {children: React.ReactNode}) => {
   const [likedWallpapers, setLikedWallpapers] = useState<string[]>([]);
   const [selectedBottomSheet, setSelectedBottomSheet] =
     useState<TSelectedBottomSheet>(null);
+  const [viewedWallpapers, setViewedWallpapers] = useState<string[]>([]);
 
   const saveLikedWallpapersInLocal = async () => {
     try {
@@ -60,6 +70,36 @@ const WallpaperProvider = ({children}: {children: React.ReactNode}) => {
     }
   }, [likedWallpapers]);
 
+  const {apiCall} = useAxios();
+
+  const increaseWallpaperCount = async (
+    id: string,
+    type: 'view' | 'download',
+  ) => {
+    type == 'view' &&
+      setViewedWallpapers(prev => {
+        if (prev.some(viewedId => viewedId === id)) return prev;
+
+        apiCall({
+          method: 'put',
+          url: `/wallpaper/inc-view-count`,
+          params: {
+            wallpaperId: id,
+          },
+        });
+        return [...prev, id];
+      });
+
+    type === 'download' &&
+      apiCall({
+        method: 'put',
+        url: `/wallpaper/inc-download-count`,
+        params: {
+          wallpaperId: id,
+        },
+      });
+  };
+
   return (
     <WallpaperContext.Provider
       value={{
@@ -67,6 +107,9 @@ const WallpaperProvider = ({children}: {children: React.ReactNode}) => {
         setLikedWallpapers,
         selectedBottomSheet,
         setSelectedBottomSheet,
+        viewedWallpapers,
+        setViewedWallpapers,
+        increaseWallpaperCount,
       }}>
       {children}
     </WallpaperContext.Provider>

@@ -11,6 +11,7 @@ import {ArrowDownToLine, Eye, Stamp} from 'lucide-react-native';
 import RNFS from 'react-native-fs';
 import {LIMIT} from '../constants/api';
 import RenderImage from '../components/RenderImage';
+import {useWallpaper} from '../context/WallpaperContext';
 
 type TPreviewScreenRouteProp = RouteProp<TRootStackParamList, 'Preview'>;
 
@@ -22,7 +23,9 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
     hasMore: defaultHasMore,
     pageNumber: defaultPageNumber,
   } = route.params;
+
   const {isLoading, apiCall} = useAxios();
+  const {increaseWallpaperCount} = useWallpaper();
 
   const [selectedPage, setSelectedPage] = useState(index || 0);
   const [wallpaperListing, setWallpaperListing] = useState<TWallpaper[]>(
@@ -38,7 +41,7 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
     limit: number;
     page: number;
   }) => {
-    const response = await apiCall({
+    const {data} = await apiCall({
       method: 'get',
       url: '/wallpaper/get-wallpaper/' + category,
       params: {
@@ -46,11 +49,11 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
         page: page,
       },
     });
-    if (response) {
-      if (response.wallpapers.length === 0) {
+    if (data) {
+      if (data.wallpapers.length === 0) {
         return setHasMore(false);
       }
-      setWallpaperListing(prev => [...prev, ...response.wallpapers]);
+      setWallpaperListing(prev => [...prev, ...data.wallpapers]);
     }
   };
 
@@ -59,7 +62,10 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
     if (selectedPage + 1 >= wallpaperListing.length - 1 && !isLoading) {
       setPageNumber(prev => prev + 1);
       fetchWallpapers({limit: LIMIT, page: pageNumber + 1});
+      console.log('inside');
     }
+
+    increaseWallpaperCount(wallpaperListing[selectedPage].id, 'view');
   }, [selectedPage]);
 
   return (
@@ -94,7 +100,6 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
           </View>
           <WallpaperLikeBtn wallpaperId={wallpaperListing[selectedPage].id} />
         </View>
-
         <PagerView
           style={{flex: 1, display: 'flex'}}
           initialPage={selectedPage}
@@ -103,11 +108,13 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
           }}>
           {wallpaperListing.map(wallpaper => {
             return (
-              <WallpaperPreviewBox url={wallpaper.url} key={wallpaper.id} />
+              <WallpaperPreviewBox
+                url={wallpaper.url}
+                key={String(index) + String(wallpaper.id)}
+              />
             );
           })}
         </PagerView>
-
         <View
           style={{
             flexDirection: 'row',
@@ -118,10 +125,12 @@ const PreviewScreen = ({route}: {route: TPreviewScreenRouteProp}) => {
           <WallpaperPreviewOption
             type="download-wallpaper"
             url={wallpaperListing[selectedPage].url}
+            id={wallpaperListing[selectedPage].id}
           />
           <WallpaperPreviewOption
             type="set-wallpaper"
             url={wallpaperListing[selectedPage].url}
+            id={wallpaperListing[selectedPage].id}
           />
         </View>
       </View>
@@ -142,15 +151,18 @@ const WallpaperPreviewBox = ({url}: {url: string}) => {
 const WallpaperPreviewOption = ({
   type,
   url,
+  id,
 }: {
   type: 'set-wallpaper' | 'download-wallpaper';
   url: string;
+  id: string;
 }) => {
+  const {increaseWallpaperCount} = useWallpaper();
   const setWallpaper = async () => {
     try {
+      increaseWallpaperCount(id, 'download');
       console.log('url', url);
       const status = await RTNDeviceWallpaper?.setWallpaper(url, 'both');
-      console.log('get', await RTNDeviceWallpaper?.getConstants);
       console.log('status', status);
     } catch (error) {
       console.log('Error while setting wallpaper', error);
@@ -178,6 +190,7 @@ const WallpaperPreviewOption = ({
 
       if (result.statusCode === 200) {
         Alert.alert('Success', 'Wallpaper saved successfully');
+        increaseWallpaperCount(id, 'download');
       } else {
         Alert.alert('Error', 'Failed to save the wallpaper.');
       }

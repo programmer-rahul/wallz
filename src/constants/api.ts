@@ -1,3 +1,3 @@
-const LIMIT = 15;
+const LIMIT = 8;
 
 export {LIMIT}

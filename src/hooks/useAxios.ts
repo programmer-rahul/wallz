@@ -2,9 +2,9 @@ import axios from 'axios';
 import {useState} from 'react';
 import {TApiCall} from '../types/api';
 
-// const baseUrl = 'https://wallz-redis-backend.onrender.com/' || '';
-const baseUrl = 'https://wallz-redis-backend.glitch.me/' || '';
-// const baseUrl = 'http://localhost:4000/' || '';
+const baseUrl = 'https://wallz-backend.onrender.com/';
+// const baseUrl = 'https://wallz-backend.glitch.me/';
+// const baseUrl = 'http://localhost:4000';
 
 const AxiosInstance = axios.create({
   baseURL: baseUrl,

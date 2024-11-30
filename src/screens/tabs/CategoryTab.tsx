@@ -23,15 +23,13 @@ const CategoryTab = () => {
   const {isLoading, apiCall} = useAxios();
 
   useEffect(() => {
-    console.log('rendered');
-
     (async () => {
-      const response = await apiCall({
+      const {data} = await apiCall({
         method: 'get',
         url: '/category/get-categories/',
       });
-      if (response) {
-        setAllCategories(response.allCategories);
+      if (data) {
+        setAllCategories(data?.allCategories);
       }
     })();
   }, []);
