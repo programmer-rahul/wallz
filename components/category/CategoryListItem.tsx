@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
         bottom: 4,
         left: 4,
         color: '#fff',
+        fontFamily: "Montserrat_500Medium"
     },
 });
 

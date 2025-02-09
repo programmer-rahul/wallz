@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { useState } from 'react';
 import { TWallpaper } from '../types/wallpaper';
@@ -59,31 +59,18 @@ const PreviewScreen = () => {
 
   return (
     String(wallpaperListing.length) && (
-      <View
-        style={{
-          paddingVertical: 10,
-          backgroundColor: COLORS.background,
-          flexDirection: 'column',
-          flex: 1,
-        }}>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: 'transparent',
-            paddingRight: 16,
-            paddingLeft: 6,
-          }}>
-          <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row', gap: 3, alignItems: 'center' }}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <View style={styles.headerItem}>
               <Eye size={16} />
-              <Text>
+              <Text style={styles.headerItemText}>
                 Views : {wallpaperListing[selectedPage]?.viewsCount || 0}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', gap: 3, alignItems: 'center' }}>
+            <View style={styles.headerItem}>
               <ArrowDownToLine size={16} />
-              <Text>
+              <Text style={styles.headerItemText}>
                 Downloads : {wallpaperListing[selectedPage]?.downloadCount || 0}
               </Text>
             </View>
@@ -91,9 +78,9 @@ const PreviewScreen = () => {
           <WallpaperLikeBtn wallpaperId={wallpaperListing[selectedPage].id} />
         </View>
 
-        <View style={{ position: "relative", flex: 1, }}>
+        <View style={styles.pagerContainer}>
           <PagerView
-            style={{ flex: 1, display: 'flex', }}
+            style={styles.pagerView}
             initialPage={selectedPage}
             orientation={'vertical'}
             onPageSelected={e => {
@@ -117,15 +104,7 @@ const PreviewScreen = () => {
             ))}
           </PagerView>
 
-          <View
-            style={{
-              position: 'absolute',
-              flexDirection: 'row',
-              justifyContent: 'space-evenly',
-              gap: 14,
-              right: 40,
-              bottom: 40,
-            }}>
+          <View style={styles.optionsContainer}>
             <WallpaperOptions
               type="download-wallpaper"
               url={wallpaperListing[selectedPage].url}
@@ -142,5 +121,49 @@ const PreviewScreen = () => {
     )
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingVertical: 10,
+    backgroundColor: COLORS.background,
+    flexDirection: 'column',
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    paddingRight: 16,
+    paddingLeft: 6,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  headerItem: {
+    flexDirection: 'row',
+    gap: 3,
+    alignItems: 'center',
+  },
+  headerItemText: {
+    color: COLORS.primary_text,
+    fontWeight: "semibold",
+    fontFamily: 'Montserrat_400Regular',
+  },
+  pagerContainer: {
+    position: 'relative',
+    flex: 1,
+  },
+  pagerView: {
+    flex: 1,
+    display: 'flex',
+  },
+  optionsContainer: {
+    position: 'absolute',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    gap: 14,
+    right: 40,
+    bottom: 40,
+  },
+});
 
 export default PreviewScreen;

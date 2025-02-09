@@ -141,6 +141,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     textTransform: 'capitalize',
+    color: COLORS.primary_text,
+    fontFamily: 'Montserrat_500Medium',
   },
   loadingContainer: {
     flex: 1,

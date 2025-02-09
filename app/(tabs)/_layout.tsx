@@ -1,16 +1,21 @@
 import COLORS from '@/constants/COLORS';
 import { Tabs } from 'expo-router';
 import { Heart, Layers2, LayoutGrid } from 'lucide-react-native';
+import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 
 export default function TabLayout() {
 
     // tabs navigation options 
-    const tabsScreenOptions = {
+    const tabsScreenOptions: BottomTabNavigationOptions = {
         headerShown: false,
         tabBarActiveTintColor: COLORS.main,
         tabBarInactiveTintColor: COLORS.icon_neutral,
         tabBarStyle: {
             backgroundColor: COLORS.background,
+            height: 55,
+        },
+        tabBarLabelStyle: {
+            fontFamily: 'Montserrat_500Medium',
         },
     }
 
