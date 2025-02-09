@@ -2,20 +2,17 @@ import { Text, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { useState } from 'react';
 import { TWallpaper } from '../types/wallpaper';
-import { TRootStackParamList } from '../types/navigation';
-import { RouteProp } from '@react-navigation/native';
 import useAxios from '../hooks/useAxios';
 import WallpaperLikeBtn from '../components/WallpaperLikeBtn';
 import { ArrowDownToLine, Eye } from 'lucide-react-native';
 
-import { LIMIT } from '../constants/api';
+import { LIMIT } from '../constants/API';
 import { useWallpaper } from '../context/WallpaperContext';
 import WallpaperPreviewBox from '../components/WallpaperPreviewBox';
 import WallpaperOptions from '../components/WallpaperOptions';
+import COLORS from '@/constants/COLORS';
 
-type TPreviewScreenRouteProp = RouteProp<TRootStackParamList, 'Preview'>;
-
-const PreviewScreen = ({ route }: { route: TPreviewScreenRouteProp }) => {
+const PreviewScreen = () => {
   const { previewScreenStates } = useWallpaper();
   if (previewScreenStates === null) return null;
 
@@ -65,16 +62,17 @@ const PreviewScreen = ({ route }: { route: TPreviewScreenRouteProp }) => {
       <View
         style={{
           paddingVertical: 10,
-          backgroundColor: '#bbbddd',
+          backgroundColor: COLORS.background,
           flexDirection: 'column',
-          rowGap: 10,
           flex: 1,
         }}>
+
         <View
           style={{
             flexDirection: 'row',
             backgroundColor: 'transparent',
-            paddingHorizontal: 20,
+            paddingRight: 16,
+            paddingLeft: 6,
           }}>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', gap: 3, alignItems: 'center' }}>
@@ -93,50 +91,52 @@ const PreviewScreen = ({ route }: { route: TPreviewScreenRouteProp }) => {
           <WallpaperLikeBtn wallpaperId={wallpaperListing[selectedPage].id} />
         </View>
 
-        <PagerView
-          style={{ flex: 1, display: 'flex' }}
-          initialPage={selectedPage}
-          orientation={'horizontal'}
-          onPageSelected={e => {
-            setSelectedPage(e.nativeEvent.position);
-            if (
-              e.nativeEvent.position + 1 >= wallpaperListing.length - 2 &&
-              !isLoading &&
-              hasMore
-            ) {
-              setPageNumber(prev => prev + 1);
-              fetchWallpapers({ limit: LIMIT, page: pageNumber + 1 });
-            }
+        <View style={{ position: "relative", flex: 1, }}>
+          <PagerView
+            style={{ flex: 1, display: 'flex', }}
+            initialPage={selectedPage}
+            orientation={'vertical'}
+            onPageSelected={e => {
+              setSelectedPage(e.nativeEvent.position);
+              if (
+                e.nativeEvent.position + 1 >= wallpaperListing.length - 2 &&
+                !isLoading &&
+                hasMore
+              ) {
+                setPageNumber(prev => prev + 1);
+                fetchWallpapers({ limit: LIMIT, page: pageNumber + 1 });
+              }
 
-            increaseWallpaperCount(wallpaperListing[selectedPage].id, 'view');
-          }}>
-          {wallpaperListing.map((wallpaper, index) => (
-            <WallpaperPreviewBox
-              key={String(index) + String(wallpaper.id)}
-              url={wallpaper.url}
+              increaseWallpaperCount(wallpaperListing[selectedPage].id, 'view');
+            }}>
+            {wallpaperListing.map((wallpaper, index) => (
+              <WallpaperPreviewBox
+                key={String(index) + String(wallpaper.id)}
+                url={wallpaper.url}
+              />
+            ))}
+          </PagerView>
+
+          <View
+            style={{
+              position: 'absolute',
+              flexDirection: 'row',
+              justifyContent: 'space-evenly',
+              gap: 14,
+              right: 40,
+              bottom: 40,
+            }}>
+            <WallpaperOptions
+              type="download-wallpaper"
+              url={wallpaperListing[selectedPage].url}
+              id={wallpaperListing[selectedPage].id}
             />
-          ))}
-        </PagerView>
-
-        <View
-          style={{
-            position: 'absolute',
-            flexDirection: 'row',
-            justifyContent: 'space-evenly',
-            gap: 15,
-            right: 28,
-            bottom: 28,
-          }}>
-          <WallpaperOptions
-            type="download-wallpaper"
-            url={wallpaperListing[selectedPage].url}
-            id={wallpaperListing[selectedPage].id}
-          />
-          <WallpaperOptions
-            type="set-wallpaper"
-            url={wallpaperListing[selectedPage].url}
-            id={wallpaperListing[selectedPage].id}
-          />
+            <WallpaperOptions
+              type="set-wallpaper"
+              url={wallpaperListing[selectedPage].url}
+              id={wallpaperListing[selectedPage].id}
+            />
+          </View>
         </View>
       </View>
     )

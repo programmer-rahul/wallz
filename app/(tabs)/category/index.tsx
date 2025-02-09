@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from 'react';
 import useAxios from '@/hooks/useAxios';
 import { router } from 'expo-router';
+import COLORS from '@/constants/COLORS';
 
 interface TCategory {
   name: string;
@@ -17,7 +18,6 @@ interface TCategory {
 
 const CategoryScreen = () => {
   const [allCategories, setAllCategories] = useState<TCategory[]>([]);
-
   const { isLoading, apiCall } = useAxios();
 
   useEffect(() => {
@@ -39,13 +39,13 @@ const CategoryScreen = () => {
         flex: 1,
         padding: 10,
         gap: 10,
-        backgroundColor: '#bbbddd',
+        backgroundColor: COLORS.background,
       }}>
       <Text style={{ fontSize: 30, textTransform: 'capitalize' }}>Category</Text>
 
       {isLoading && !allCategories.length ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size={'large'} />
+          <ActivityIndicator size={'large'} color={COLORS.main} />
         </View>
       ) : (
         <FlatList

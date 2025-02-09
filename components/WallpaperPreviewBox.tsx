@@ -8,6 +8,7 @@ const WallpaperPreviewBox = ({ url }: { url: string }) => {
         flex: 1,
         paddingHorizontal: 20,
         marginBottom: 10,
+        paddingTop: 10
       }}>
       <RenderImage url={url} />
     </View>

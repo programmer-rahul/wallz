@@ -2,6 +2,7 @@ import { Pressable, View } from 'react-native';
 import { useWallpaper } from '../context/WallpaperContext';
 import RenderImage from './RenderImage';
 import WallpaperLikeBtn from './WallpaperLikeBtn';
+import COLORS from '@/constants/COLORS';
 
 const WallpaperListItem = ({
   url,
@@ -17,8 +18,9 @@ const WallpaperListItem = ({
   return (
     <Pressable
       style={{
-        aspectRatio: 9 / 16,
         flex: 1,
+        aspectRatio: 9 / 16,
+        borderRadius : 12
       }}
       onPress={() => {
         onPress();

@@ -1,7 +1,8 @@
-import {useEffect, useState} from 'react';
-import {Pressable, Text} from 'react-native';
-import {useWallpaper} from '../context/WallpaperContext';
-import {Heart} from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { Pressable, Text } from 'react-native';
+import { useWallpaper } from '../context/WallpaperContext';
+import { Heart } from 'lucide-react-native';
+import COLORS from '@/constants/COLORS';
 
 const WallpaperLikeBtn = ({
   wallpaperId,
@@ -10,7 +11,7 @@ const WallpaperLikeBtn = ({
   wallpaperId: string;
   hideOnUnlike?: boolean;
 }) => {
-  const {likedWallpapers, setLikedWallpapers} = useWallpaper();
+  const { likedWallpapers, setLikedWallpapers } = useWallpaper();
   const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
@@ -33,11 +34,11 @@ const WallpaperLikeBtn = ({
             : [...prev, wallpaperId],
         );
       }}>
-      <Text style={{fontSize: 25}}>
+      <Text style={{ fontSize: 25 }}>
         <Heart
           size={28}
-          color={'#e31b23'}
-          fill={isLiked ? '#e31b23' : 'transparent'}
+          color={COLORS.heart}
+          fill={isLiked ? COLORS.heart : 'transparent'}
         />
       </Text>
     </Pressable>

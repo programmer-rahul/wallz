@@ -2,8 +2,8 @@ import { ArrowDownToLine, Stamp } from 'lucide-react-native';
 import { Alert, Pressable } from 'react-native';
 import { useWallpaper } from '../context/WallpaperContext';
 import RTNDeviceWallpaper from 'react-native-device-wallpaper-manager/js/NativeDeviceWallpaper';
-// import RNFS from 'react-native-fs';
 import * as FileSystem from 'expo-file-system'
+import COLORS from '@/constants/COLORS';
 
 const WallpaperOptions = ({
   type,
@@ -63,17 +63,20 @@ const WallpaperOptions = ({
         type === 'download-wallpaper' && downloadWallpaper(url);
       }}
       style={{
-        width: 40,
+        width: 50,
         aspectRatio: 1 / 1,
-        backgroundColor: '#00199a',
+        backgroundColor: COLORS.main + "cc",
+        borderColor: COLORS.main,
+        borderWidth: 2,
         borderRadius: '50%',
         justifyContent: 'center',
         alignItems: 'center',
+        boxShadow: "0 0 10px 0 rgba(0,0,0,0.6)"
       }}>
       {type === 'download-wallpaper' && (
-        <ArrowDownToLine size={25} color={'#fff333'} />
+        <ArrowDownToLine size={30} color={COLORS.background + "ee"} />
       )}
-      {type === 'set-wallpaper' && <Stamp size={25} color={'#fff333'} />}
+      {type === 'set-wallpaper' && <Stamp size={30} color={COLORS.background + "ee"} />}
     </Pressable>
   );
 };

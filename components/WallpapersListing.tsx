@@ -2,19 +2,17 @@ import { useEffect, useState } from 'react';
 import useAxios from '../hooks/useAxios';
 import { TWallpaper } from '../types/wallpaper';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { TRootStackParamList } from '../types/navigation';
+import { useIsFocused, } from '@react-navigation/native';
 import { TCategoryNames } from '../types/category';
 import { useWallpaper } from '../context/WallpaperContext';
-import { LIMIT } from '../constants/api';
+import { LIMIT } from '../constants/API';
 import WallpaperListItem from './WallpaperListItem';
 import { router } from 'expo-router';
+import COLORS from '@/constants/COLORS';
 
 const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
   const { isLoading, apiCall } = useAxios();
   const { likedWallpapers, setPreviewScreenStates } = useWallpaper();
-
 
   const [wallpaperListing, setWallpaperListing] = useState<TWallpaper[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
@@ -73,13 +71,12 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
 
       {isLoading && !wallpaperListing.length ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size={'large'} />
+          <ActivityIndicator size={'large'} color={COLORS.main} />
         </View>
       ) : (
         <FlatList
           style={{
-            width: '100%',
-            backgroundColor: 'transparent',
+            flex: 1,
           }}
           data={wallpaperListing}
           renderItem={({ item, index }) => {
@@ -89,7 +86,6 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
                 key={String(index) + String(item.id)}
                 id={item.id}
                 onPress={() => {
-                  router.navigate('/preview');
                   setPreviewScreenStates(
                     {
                       defaultWallpapers: wallpaperListing,
@@ -99,14 +95,7 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
                       pageNumber,
                     }
                   )
-
-                  // navigation.navigate('Preview', {
-                  //   defaultWallpapers: wallpaperListing,
-                  //   index,
-                  //   category,
-                  //   hasMore,
-                  //   pageNumber,
-                  // });
+                  router.navigate('/preview');
                 }}
               />
             );
@@ -128,14 +117,14 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
           ListFooterComponent={() => {
             return (
               <View style={{ paddingBottom: 20 }}>
-                {isLoading && <ActivityIndicator size={'large'} />}
+                {isLoading && <ActivityIndicator size={'large'} color={COLORS.main} />}
               </View>
             );
           }}
           keyExtractor={item => item.id}
-          // initialNumToRender={8}
-          // maxToRenderPerBatch={8}
-          // windowSize={10}
+          initialNumToRender={8}
+          maxToRenderPerBatch={8}
+          windowSize={10}
           showsVerticalScrollIndicator={false}
         />
       )}
