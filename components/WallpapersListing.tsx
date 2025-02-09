@@ -9,6 +9,7 @@ import { LIMIT } from '../constants/API';
 import WallpaperListItem from './WallpaperListItem';
 import { router } from 'expo-router';
 import COLORS from '@/constants/COLORS';
+import NoWallpapersFound from './NoWallpapersFound';
 
 const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
 
@@ -80,7 +81,7 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
           <ActivityIndicator size={'large'} color={COLORS.main} />
         </View>
       ) : (
-        <FlatList
+        wallpaperListing.length > 0 ? <FlatList
           style={styles.flatList}
           data={wallpaperListing}
           renderItem={({ item, index }) => {
@@ -122,11 +123,12 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
           }}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
-        />
+        /> : <NoWallpapersFound category={category} />
       )}
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
