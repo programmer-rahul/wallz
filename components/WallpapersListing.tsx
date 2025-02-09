@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import useAxios from '../hooks/useAxios';
 import { TWallpaper } from '../types/wallpaper';
-import { ActivityIndicator, FlatList, Text, View } from 'react-native';
-import { useIsFocused, } from '@react-navigation/native';
+import { ActivityIndicator, FlatList, Text, View, StyleSheet } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { TCategoryNames } from '../types/category';
 import { useWallpaper } from '../context/WallpaperContext';
 import { LIMIT } from '../constants/API';
@@ -11,13 +11,18 @@ import { router } from 'expo-router';
 import COLORS from '@/constants/COLORS';
 
 const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
+
+  // global states and hooks
   const { isLoading, apiCall } = useAxios();
   const { likedWallpapers, setPreviewScreenStates } = useWallpaper();
 
+  // states for wallpaper listing
   const [wallpaperListing, setWallpaperListing] = useState<TWallpaper[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const isFocused = useIsFocused();
 
+  // fetch wallpapers from the server
   const fetchWallpapers = async ({
     limit,
     page,
@@ -49,12 +54,13 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
     }
   };
 
+  // fetch wallpapers on initial render
   useEffect(() => {
     category !== 'favourite' &&
       fetchWallpapers({ limit: LIMIT, page: pageNumber });
   }, []);
 
-  const isFocused = useIsFocused();
+  // fetch favourite wallpapers on focus
   useEffect(() => {
     if (category === 'favourite' && isFocused && !isLoading) {
       setWallpaperListing([]);
@@ -64,20 +70,18 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
   }, [isFocused]);
 
   return (
-    <View style={{ padding: 10, flexDirection: 'column', gap: 10, flex: 1 }}>
-      <Text style={{ fontSize: 30, textTransform: 'capitalize' }}>
+    <View style={styles.container}>
+      <Text style={styles.title}>
         {category === 'all-wallpapers' ? 'Wallpapers' : category}
       </Text>
 
       {isLoading && !wallpaperListing.length ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={styles.loadingContainer}>
           <ActivityIndicator size={'large'} color={COLORS.main} />
         </View>
       ) : (
         <FlatList
-          style={{
-            flex: 1,
-          }}
+          style={styles.flatList}
           data={wallpaperListing}
           renderItem={({ item, index }) => {
             return (
@@ -101,13 +105,8 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
             );
           }}
           numColumns={2}
-          columnWrapperStyle={{
-            justifyContent: 'space-between',
-            gap: 10,
-          }}
-          contentContainerStyle={{
-            gap: 10,
-          }}
+          columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={styles.contentContainer}
           onEndReached={e => {
             if (!hasMore || isLoading) return;
             console.log('end reached', e.distanceFromEnd);
@@ -116,7 +115,7 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
           }}
           ListFooterComponent={() => {
             return (
-              <View style={{ paddingBottom: 20 }}>
+              <View style={styles.footer}>
                 {isLoading && <ActivityIndicator size={'large'} color={COLORS.main} />}
               </View>
             );
@@ -131,5 +130,36 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+    flexDirection: 'column',
+    gap: 10,
+    flex: 1,
+  },
+  title: {
+    fontSize: 30,
+    textTransform: 'capitalize',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flatList: {
+    flex: 1,
+  },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  contentContainer: {
+    gap: 10,
+  },
+  footer: {
+    paddingBottom: 20,
+  },
+});
 
 export default WallpapersListing;

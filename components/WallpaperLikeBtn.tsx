@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text, StyleSheet } from 'react-native';
 import { useWallpaper } from '../context/WallpaperContext';
 import { Heart } from 'lucide-react-native';
 import COLORS from '@/constants/COLORS';
@@ -20,11 +20,10 @@ const WallpaperLikeBtn = ({
 
   return (
     <Pressable
-      style={{
-        display: hideOnUnlike && !isLiked ? 'none' : 'flex',
-        flex: 0,
-        alignSelf: 'center',
-      }}
+      style={[
+        styles.pressable,
+        { display: hideOnUnlike && !isLiked ? 'none' : 'flex' },
+      ]}
       onPress={() => {
         setIsLiked(prev => !prev);
 
@@ -34,7 +33,7 @@ const WallpaperLikeBtn = ({
             : [...prev, wallpaperId],
         );
       }}>
-      <Text style={{ fontSize: 25 }}>
+      <Text style={styles.text}>
         <Heart
           size={28}
           color={COLORS.heart}
@@ -44,5 +43,15 @@ const WallpaperLikeBtn = ({
     </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  pressable: {
+    flex: 0,
+    alignSelf: 'center',
+  },
+  text: {
+    fontSize: 25,
+  },
+});
 
 export default WallpaperLikeBtn;

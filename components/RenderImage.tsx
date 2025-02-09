@@ -1,5 +1,4 @@
 import COLORS from "@/constants/COLORS";
-import React from "react";
 import { useState } from "react";
 import { ActivityIndicator, Image, View, StyleSheet } from "react-native";
 
