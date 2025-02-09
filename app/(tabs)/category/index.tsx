@@ -52,7 +52,10 @@ const CategoryScreen = () => {
               />
             );
           }}
+          numColumns={2}
+          columnWrapperStyle={styles.columnWrapper}
           ListFooterComponent={() => <View style={styles.footer} />}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </View>
@@ -82,6 +85,11 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'transparent',
     display: 'flex',
+    padding: 4
+  },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    gap: 10,
   },
   footer: {
     paddingBottom: 10,

@@ -121,9 +121,6 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
             );
           }}
           keyExtractor={item => item.id}
-          initialNumToRender={8}
-          maxToRenderPerBatch={8}
-          windowSize={10}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -151,6 +148,7 @@ const styles = StyleSheet.create({
   },
   flatList: {
     flex: 1,
+    padding: 4
   },
   columnWrapper: {
     justifyContent: 'space-between',
