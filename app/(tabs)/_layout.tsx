@@ -12,10 +12,13 @@ export default function TabLayout() {
         tabBarInactiveTintColor: COLORS.icon_neutral,
         tabBarStyle: {
             backgroundColor: COLORS.background,
-            height: 55,
+            height: 70,
         },
         tabBarLabelStyle: {
             fontFamily: 'Montserrat_500Medium',
+        },
+        tabBarIconStyle: {
+            marginTop: 5,
         },
     }
 

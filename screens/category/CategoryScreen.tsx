@@ -1,6 +1,7 @@
 import {
     ActivityIndicator,
     FlatList,
+    Image,
     StyleSheet,
     Text,
     View,
@@ -33,7 +34,16 @@ const CategoryScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Category</Text>
+            <View style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <Image
+                    style={{ width: 45, height: 35 }}
+                    source={require('@/assets/images/small-icon.png')}
+                    resizeMode={"contain"}
+                />
+                <Text style={styles.title}>
+                    Category
+                </Text>
+            </View>
 
             {isLoading && !allCategories.length ? (
                 <View style={styles.loadingContainer}>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import useAxios from '../hooks/useAxios';
 import { TWallpaper } from '../types/wallpaper';
-import { ActivityIndicator, FlatList, Text, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, Text, View, StyleSheet, Image } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { TCategoryNames } from '../types/category';
 import { useWallpaper } from '../context/WallpaperContext';
@@ -72,9 +72,17 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        {category === 'all-wallpapers' ? 'Wallpapers' : category}
-      </Text>
+
+      <View style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10 }}>
+        <Image
+          style={{ width: 45, height: 35 }}
+          source={require('@/assets/images/small-icon.png')}
+          resizeMode={"contain"}
+        />
+        <Text style={styles.title}>
+          {category === 'all-wallpapers' ? 'Wallpapers' : category}
+        </Text>
+      </View>
 
       {isLoading && !wallpaperListing.length ? (
         <View style={styles.loadingContainer}>
