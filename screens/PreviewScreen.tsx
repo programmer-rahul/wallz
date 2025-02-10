@@ -63,13 +63,13 @@ const PreviewScreen = () => {
                 <View style={styles.header}>
                     <View style={styles.headerLeft}>
                         <View style={styles.headerItem}>
-                            <Eye size={16} />
+                            <Eye size={16} color={COLORS.primary_text} />
                             <Text style={styles.headerItemText}>
                                 Views : {wallpaperListing[selectedPage]?.viewsCount || 0}
                             </Text>
                         </View>
                         <View style={styles.headerItem}>
-                            <ArrowDownToLine size={16} />
+                            <ArrowDownToLine size={16} color={COLORS.primary_text} />
                             <Text style={styles.headerItemText}>
                                 Downloads : {wallpaperListing[selectedPage]?.downloadCount || 0}
                             </Text>

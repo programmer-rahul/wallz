@@ -6,9 +6,9 @@ import {
   useContext,
   useEffect,
   useState,
+  useMemo,
 } from 'react';
 import useAxios from '../hooks/useAxios';
-import { downloadFile } from 'react-native-fs';
 import { TWallpaper } from '@/types/wallpaper';
 
 type TSelectedBottomSheet = 'set-wallpaper' | null;
@@ -49,87 +49,90 @@ const WallpaperContext = createContext<TWallpaperContext>({
   setPreviewScreenStates: () => { }
 });
 
-const WallpaperProvider = ({ children }: { children: React.ReactNode }) => {
+const useLikedWallpapers = () => {
   const [likedWallpapers, setLikedWallpapers] = useState<string[]>([]);
-  const [selectedBottomSheet, setSelectedBottomSheet] =
-    useState<TSelectedBottomSheet>(null);
-  const [viewedWallpapers, setViewedWallpapers] = useState<string[]>([]);
-
-  const [previewScreenStates, setPreviewScreenStates] = useState<null | TPreviewScreenStates>(null)
-
-  const saveLikedWallpapersInLocal = async () => {
-    try {
-      const jsonValues = JSON.stringify(likedWallpapers);
-      await AsyncStorage.setItem('@likedWallpapers', jsonValues);
-    } catch (err) {
-      console.log('error while saving in localstorage');
-    }
-  };
-
-  const fetchLikedWallpapersFromLocal = async () => {
-    try {
-      const jsonValues = await AsyncStorage.getItem('@likedWallpapers');
-      const fetchedWallpapers =
-        jsonValues !== null ? JSON.parse(jsonValues) : [];
-      setLikedWallpapers(fetchedWallpapers);
-    } catch (err) {
-      console.log('error while fetching likedWallpaers from localstorage');
-    }
-  };
 
   useEffect(() => {
+    const fetchLikedWallpapersFromLocal = async () => {
+      try {
+        const jsonValues = await AsyncStorage.getItem('@likedWallpapers');
+        const fetchedWallpapers = jsonValues !== null ? JSON.parse(jsonValues) : [];
+        setLikedWallpapers(fetchedWallpapers);
+      } catch (err) {
+        console.error('Error while fetching liked wallpapers from local storage', err);
+      }
+    };
+
     fetchLikedWallpapersFromLocal();
   }, []);
 
   useEffect(() => {
+    const saveLikedWallpapersInLocal = async () => {
+      try {
+        const jsonValues = JSON.stringify(likedWallpapers);
+        await AsyncStorage.setItem('@likedWallpapers', jsonValues);
+      } catch (err) {
+        console.error('Error while saving liked wallpapers in local storage', err);
+      }
+    };
+
     if (likedWallpapers.length) {
       saveLikedWallpapersInLocal();
     }
   }, [likedWallpapers]);
 
+  return [likedWallpapers, setLikedWallpapers] as const;
+};
+
+const WallpaperProvider = ({ children }: { children: React.ReactNode }) => {
+  const [likedWallpapers, setLikedWallpapers] = useLikedWallpapers();
+  const [selectedBottomSheet, setSelectedBottomSheet] = useState<TSelectedBottomSheet>(null);
+  const [viewedWallpapers, setViewedWallpapers] = useState<string[]>([]);
+  const [previewScreenStates, setPreviewScreenStates] = useState<null | TPreviewScreenStates>(null);
+
   const { apiCall } = useAxios();
 
-  const increaseWallpaperCount = async (
-    id: string,
-    type: 'view' | 'download',
-  ) => {
-    type == 'view' &&
+  const increaseWallpaperCount = async (id: string, type: 'view' | 'download') => {
+    if (type === 'view') {
       setViewedWallpapers(prev => {
-        if (prev.some(viewedId => viewedId === id)) return prev;
+        if (prev.includes(id)) return prev;
 
         apiCall({
           method: 'put',
           url: `/wallpaper/inc-view-count`,
-          params: {
-            wallpaperId: id,
-          },
-        });
+          params: { wallpaperId: id },
+        }).catch(err => console.error('Error increasing view count', err));
+
         return [...prev, id];
       });
-
-    type === 'download' &&
+    } else if (type === 'download') {
       apiCall({
         method: 'put',
         url: `/wallpaper/inc-download-count`,
-        params: {
-          wallpaperId: id,
-        },
-      });
+        params: { wallpaperId: id },
+      }).catch(err => console.error('Error increasing download count', err));
+    }
   };
 
+  const contextValue = useMemo(() => ({
+    likedWallpapers,
+    setLikedWallpapers,
+    selectedBottomSheet,
+    setSelectedBottomSheet,
+    viewedWallpapers,
+    setViewedWallpapers,
+    increaseWallpaperCount,
+    previewScreenStates,
+    setPreviewScreenStates,
+  }), [
+    likedWallpapers,
+    selectedBottomSheet,
+    viewedWallpapers,
+    previewScreenStates,
+  ]);
+
   return (
-    <WallpaperContext.Provider
-      value={{
-        likedWallpapers,
-        setLikedWallpapers,
-        selectedBottomSheet,
-        setSelectedBottomSheet,
-        viewedWallpapers,
-        setViewedWallpapers,
-        increaseWallpaperCount,
-        previewScreenStates,
-        setPreviewScreenStates
-      }}>
+    <WallpaperContext.Provider value={contextValue}>
       {children}
     </WallpaperContext.Provider>
   );

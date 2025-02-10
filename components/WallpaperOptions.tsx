@@ -19,9 +19,9 @@ const WallpaperOptions = ({
   const setWallpaper = async () => {
     try {
       increaseWallpaperCount(id, 'download');
-      console.log('url', url);
       const status = await RTNDeviceWallpaper?.setWallpaper(url, 'both');
       console.log('status', status);
+      Alert.alert('Success', 'Wallpaper set successfully');
     } catch (error) {
       console.log('Error while setting wallpaper', error);
     }
