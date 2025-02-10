@@ -65,18 +65,18 @@ const WallpaperOptions = ({
       style={{
         width: 50,
         aspectRatio: 1 / 1,
-        backgroundColor: COLORS.main + "cc",
-        borderColor: COLORS.main,
+        backgroundColor: COLORS.icon_neutral + "cc",
+        borderColor: COLORS.icon_neutral,
         borderWidth: 2,
-        borderRadius: '50%',
+        borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
-        boxShadow: "0 0 10px 0 rgba(0,0,0,0.6)"
+        elevation: 10,
       }}>
       {type === 'download-wallpaper' && (
-        <ArrowDownToLine size={30} color={COLORS.background + "ee"} />
+        <ArrowDownToLine size={30} color={COLORS.background + "cc"} />
       )}
-      {type === 'set-wallpaper' && <Stamp size={30} color={COLORS.background + "ee"} />}
+      {type === 'set-wallpaper' && <Stamp size={30} color={COLORS.background + "cc"} />}
     </Pressable>
   );
 };

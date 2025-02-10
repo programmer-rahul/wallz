@@ -1,8 +1,12 @@
+// filepath: /home/pain/Documents/Setups/wallz-expo/components/WallpaperListItem.tsx
+import React, { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useWallpaper } from '../context/WallpaperContext';
 import RenderImage from './RenderImage';
 import WallpaperLikeBtn from './WallpaperLikeBtn';
 import { LinearGradient } from 'expo-linear-gradient';
+import CardItemSkeltonLoader from './CardItemSkeltonLoader';
+
 const WallpaperListItem = ({
   url,
   onPress,
@@ -13,6 +17,7 @@ const WallpaperListItem = ({
   id: string;
 }) => {
   const { increaseWallpaperCount } = useWallpaper();
+  const [loading, setLoading] = useState(true);
 
   return (
     <Pressable
@@ -26,19 +31,21 @@ const WallpaperListItem = ({
         onPress();
         increaseWallpaperCount(id, 'view');
       }}>
-      <RenderImage url={url} />
+      <RenderImage url={url} onLoad={() => { setLoading(false) }} />
       {/* Gradient Overlay */}
-      <LinearGradient
-        colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.6)"]}
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: "45%",
-          borderBottomLeftRadius: 12,
-          borderBottomRightRadius: 12,
-        }} />
+      {
+        !loading && <LinearGradient
+          colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.6)"]}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: "45%",
+            borderBottomLeftRadius: 12,
+            borderBottomRightRadius: 12,
+          }} />
+      }
       <View
         style={{
           position: 'absolute',
@@ -48,11 +55,8 @@ const WallpaperListItem = ({
         }}>
         <WallpaperLikeBtn wallpaperId={id} hideOnUnlike />
       </View>
-
     </Pressable>
   );
 };
 
 export default WallpaperListItem;
-
-

@@ -5,7 +5,6 @@ import { TWallpaper } from '../types/wallpaper';
 import useAxios from '../hooks/useAxios';
 import WallpaperLikeBtn from '../components/WallpaperLikeBtn';
 import { ArrowDownToLine, Eye } from 'lucide-react-native';
-
 import { LIMIT } from '../constants/API';
 import { useWallpaper } from '../context/WallpaperContext';
 import WallpaperPreviewBox from '../components/WallpaperPreviewBox';
@@ -57,6 +56,7 @@ const PreviewScreen = () => {
     }
   };
 
+
   return (
     String(wallpaperListing.length) && (
       <View style={styles.container}>
@@ -95,7 +95,8 @@ const PreviewScreen = () => {
               }
 
               increaseWallpaperCount(wallpaperListing[selectedPage].id, 'view');
-            }}>
+            }}
+          >
             {wallpaperListing.map((wallpaper, index) => (
               <WallpaperPreviewBox
                 key={String(index) + String(wallpaper.id)}
@@ -104,7 +105,7 @@ const PreviewScreen = () => {
             ))}
           </PagerView>
 
-          <View style={styles.optionsContainer}>
+          <View style={{ ...styles.optionsContainer }}>
             <WallpaperOptions
               type="download-wallpaper"
               url={wallpaperListing[selectedPage].url}
@@ -124,7 +125,7 @@ const PreviewScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
+    paddingTop: 10,
     backgroundColor: COLORS.background,
     flexDirection: 'column',
     flex: 1,
@@ -160,9 +161,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    gap: 14,
-    right: 40,
-    bottom: 40,
+    gap: 12,
+    right: 35,
+    bottom: 35,
+    transitionDuration: "1s",
   },
 });
 

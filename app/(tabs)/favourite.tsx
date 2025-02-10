@@ -1,13 +1,9 @@
-import { View } from 'react-native';
-import WallpapersListing from '../../components/WallpapersListing';
-import COLORS from '@/constants/COLORS';
+import FavouriteScreen from '@/screens/FavouriteScreen';
 
-const FavouriteScreen = () => {
+const FavouriteTab = () => {
     return (
-        <View style={{ height: '100%', backgroundColor: COLORS.background }}>
-            <WallpapersListing category="favourite" />
-        </View>
+        <FavouriteScreen />
     );
 };
 
-export default FavouriteScreen;
+export default FavouriteTab;

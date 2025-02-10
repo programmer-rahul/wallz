@@ -32,10 +32,11 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     message: {
-        fontSize: 18,
+        fontSize: 16,
         color: COLORS.secondary_text + "aa",
         textAlign: "center",
         marginVertical: 10,
+        fontFamily: 'Montserrat_400Regular',
     },
     button: {
         backgroundColor: COLORS.icon_neutral,
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: COLORS.btn_text,
         fontSize: 16,
-        fontWeight: "bold",
+        fontFamily: 'Montserrat_400Regular',
     },
 });
 
