@@ -79,7 +79,11 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
           source={require('@/assets/images/small-icon.png')}
           resizeMode={"contain"}
         />
-        <Text style={styles.title}>
+        <Text
+          style={styles.title}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {category === 'all-wallpapers' ? 'Wallpapers' : category}
         </Text>
       </View>
@@ -150,6 +154,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     color: COLORS.primary_text,
     fontFamily: 'Montserrat_500Medium',
+    flex : 1,
   },
   loadingContainer: {
     flex: 1,

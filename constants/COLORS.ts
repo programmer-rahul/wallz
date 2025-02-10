@@ -12,6 +12,7 @@ const COLORS = {
     heart: "#ff0000",
     card_bg1 : "#e0e0e0",
     card_bg2 : "#c0c0c0",
+    card_text : "#ffffff"
 }
 
 export default COLORS;

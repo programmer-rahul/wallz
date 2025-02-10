@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient"; // Import gradient
 import { StyleSheet } from "react-native";
+import COLORS from "@/constants/COLORS";
 
 const CategoryListItem = ({
     previewUrl,
@@ -27,7 +28,10 @@ const CategoryListItem = ({
                 colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.8)"]}
                 style={styles.gradient}
             />
-            <Text style={styles.text}>{categoryName}</Text>
+            <View style={styles.categoryName}>
+                <Text style={styles.text} numberOfLines={1}
+                    ellipsizeMode="tail">{categoryName}</Text>
+            </View>
         </Pressable>
     );
 };
@@ -54,13 +58,17 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 12,
         borderBottomRightRadius: 12,
     },
-    text: {
-        fontSize: 20,
+    categoryName: {
         position: 'absolute',
         bottom: 10,
-        left: 10,
-        color: '#fff',
+        width: "100%",
+    },
+    text: {
+        paddingLeft: 10,
+        fontSize: 20,
+        color: COLORS.card_text,
         fontFamily: "Montserrat_500Medium",
+        flex: 1,
     },
 });
 
