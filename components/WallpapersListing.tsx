@@ -10,6 +10,8 @@ import WallpaperListItem from './WallpaperListItem';
 import { router } from 'expo-router';
 import COLORS from '@/constants/COLORS';
 import NoWallpapersFound from './NoWallpapersFound';
+import CardItemSkeltonLoader from './CardItemSkeltonLoader';
+import ListSkeltonLoader from './ListSkeltonLoader';
 
 const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
 
@@ -89,9 +91,7 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
       </View>
 
       {isLoading && !wallpaperListing.length ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size={'large'} color={COLORS.main} />
-        </View>
+        <ListSkeltonLoader noOfItem={LIMIT} cardType="wallpaper" />
       ) : (
         wallpaperListing.length > 0 ? <FlatList
           style={styles.flatList}
@@ -136,8 +136,9 @@ const WallpapersListing = ({ category }: { category: TCategoryNames }) => {
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
         /> : <NoWallpapersFound category={category} />
-      )}
-    </View>
+      )
+      }
+    </View >
   );
 };
 
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     color: COLORS.primary_text,
     fontFamily: 'Montserrat_500Medium',
-    flex : 1,
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -178,3 +179,5 @@ const styles = StyleSheet.create({
 });
 
 export default WallpapersListing;
+
+

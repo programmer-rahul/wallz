@@ -1,5 +1,4 @@
 import {
-    ActivityIndicator,
     FlatList,
     Image,
     StyleSheet,
@@ -11,6 +10,7 @@ import useAxios from '@/hooks/useAxios';
 import COLORS from '@/constants/COLORS';
 import CategoryListItem from '@/components/category/CategoryListItem';
 import { TCategory } from '@/types/category';
+import ListSkeltonLoader from '@/components/ListSkeltonLoader';
 
 const CategoryScreen = () => {
     const [allCategories, setAllCategories] = useState<TCategory[]>([]);
@@ -46,9 +46,7 @@ const CategoryScreen = () => {
             </View>
 
             {isLoading && !allCategories.length ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'large'} color={COLORS.main} />
-                </View>
+                <ListSkeltonLoader noOfItem={8} cardType='category' />
             ) : (
                 <FlatList
                     style={styles.flatList}

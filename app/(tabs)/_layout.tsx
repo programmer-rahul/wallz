@@ -2,6 +2,7 @@ import COLORS from '@/constants/COLORS';
 import { Tabs } from 'expo-router';
 import { Heart, Layers2, LayoutGrid } from 'lucide-react-native';
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { Text } from 'react-native';
 
 export default function TabLayout() {
 
@@ -20,6 +21,11 @@ export default function TabLayout() {
         tabBarIconStyle: {
             marginTop: 5,
         },
+        tabBarLabel: ({ focused, color, children }) => (
+            <Text style={{ fontFamily: focused ? 'Montserrat_700Bold' : 'Montserrat_500Medium', color, fontSize: 11 }}>
+                {children}
+            </Text>
+        ),
     }
 
     // tabs icons
