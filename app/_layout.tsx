@@ -11,6 +11,7 @@ import {
 } from '@expo-google-fonts/montserrat';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useCallback } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -37,12 +38,15 @@ export default function RootLayout() {
   }
 
   return (
-    <WallpaperProvider>
-      <StatusBar backgroundColor={COLORS.background} barStyle={'dark-content'} />
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="preview" options={{ title: "Preview", headerShown: false }} />
-      </Stack>
-    </WallpaperProvider>
+    <SafeAreaView style={{flex : 1, backgroundColor : COLORS.background}}>
+      <WallpaperProvider>
+        <StatusBar backgroundColor={COLORS.background} barStyle={'dark-content'} />
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="preview" options={{ title: "Preview", headerShown: false }} />
+        </Stack>
+      </WallpaperProvider>
+    </SafeAreaView>
+
   );
 }

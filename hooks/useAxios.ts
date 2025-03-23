@@ -1,10 +1,9 @@
 import axios from 'axios';
 import {useState} from 'react';
+import {Platform} from 'react-native';
 import {TApiCall} from '../types/api';
 
-const baseUrl = 'https://wallz-backend.onrender.com/';
-// const baseUrl = 'https://wallz-backend.glitch.me/';
-// const baseUrl = 'http://localhost:4000';
+const baseUrl = 'https://wallz-backend.onrender.com';
 
 const AxiosInstance = axios.create({
   baseURL: baseUrl,
@@ -21,7 +20,6 @@ const useAxios = () => {
     data = {},
     params = {},
   }: TApiCall) => {
-    // check if base url is available
     if (!baseUrl) {
       setError('No Base Url is set');
       setResponse(null);
@@ -31,18 +29,46 @@ const useAxios = () => {
     setIsLoading(true);
 
     try {
-      // here i want to see the full url which going to for api call
-      const {data: responseData} = await AxiosInstance({
-        method,
-        url,
-        data,
-        params,
-      });
+      const fullUrl = `${baseUrl}${url}`;
+      // console.log('API Request URL:', fullUrl, 'Params:', params);
+
+      let responseData;
+
+      if (Platform.OS === 'ios') {
+        // Use fetch() on iOS
+        const query = new URLSearchParams(params).toString();
+        const fetchUrl = query ? `${fullUrl}?${query}` : fullUrl;
+
+        const fetchOptions: RequestInit = {
+          method: method.toUpperCase(),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+
+        if (method.toLowerCase() !== 'get') {
+          fetchOptions.body = JSON.stringify(data);
+        }
+
+        const res = await fetch(fetchUrl, fetchOptions);
+        responseData = await res.json();
+      } else {
+        // Use Axios for Android/dev
+        const {data: axiosData} = await AxiosInstance({
+          method,
+          url,
+          data,
+          params,
+        });
+        responseData = axiosData;
+      }
+
       setResponse(responseData);
       return responseData;
     } catch (error: any) {
+      console.log('API Call Error:', error);
       setResponse(null);
-      setError(error);
+      setError(error?.message || 'Unknown Error');
     } finally {
       setIsLoading(false);
     }
